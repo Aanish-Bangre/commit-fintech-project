@@ -44,16 +44,68 @@ export function Navbar() {
               </button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <button className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors">Tools</button>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/strategy-builder')}
+              >
+                Strategy Builder
+              </button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <button className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors">Analytics</button>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/backtesting')}
+              >
+                Backtesting
+              </button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <button className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors">Markets</button>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/risk-dashboard')}
+              >
+                Risk Dashboard
+              </button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <button className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors">Account</button>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/ai-assistant')}
+              >
+                AI Assistant
+              </button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/paper-trading')}
+              >
+                Paper Trading
+              </button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/compliance')}
+              >
+                Compliance
+              </button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/marketplace')}
+              >
+                Marketplace
+              </button>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <button 
+                className="hover:bg-accent/50 rounded-full px-4 py-2 transition-colors"
+                onClick={() => handleNavigation('/education')}
+              >
+                Education
+              </button>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
