@@ -1,0 +1,179 @@
+# QuantEase Backend
+
+A FastAPI-based backend for the QuantEase algorithmic trading platform.
+
+## Features
+
+- **Strategy Management**: Create, update, and manage trading strategies
+- **Backtesting**: Run backtests on historical data with comprehensive metrics
+- **Paper Trading**: Simulate trades without real money
+- **Risk Management**: Generate risk reports and compliance logs
+- **Marketplace**: Share and discover trading strategies
+- **Education**: Learning content and progress tracking
+- **Authentication**: Supabase-based user authentication
+
+## Project Structure
+
+```
+backend/
+├── app/
+│   ├── api/
+│   │   └── v1/
+│   │       ├── api.py
+│   │       └── endpoints/
+│   │           ├── strategies.py
+│   │           ├── backtests.py
+│   │           ├── paper_trades.py
+│   │           ├── risk_reports.py
+│   │           ├── marketplace.py
+│   │           ├── comments.py
+│   │           ├── education.py
+│   │           ├── user_progress.py
+│   │           └── compliance.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── database.py
+│   ├── models/
+│   │   ├── strategy.py
+│   │   ├── backtest.py
+│   │   ├── paper_trade.py
+│   │   ├── risk_report.py
+│   │   ├── marketplace.py
+│   │   ├── comment.py
+│   │   ├── education.py
+│   │   ├── user_progress.py
+│   │   └── compliance.py
+│   ├── services/
+│   │   ├── auth.py
+│   │   └── backtest.py
+│   └── main.py
+├── stock_data/
+│   ├── BHARTIARTL_NS.csv
+│   ├── HDFCBANK_NS.csv
+│   └── ... (other stock data files)
+├── pyproject.toml
+└── README.md
+```
+
+## Setup
+
+1. **Install dependencies**:
+   ```bash
+   pip install -e .
+   ```
+
+2. **Environment Configuration**:
+   - Copy `.env.example` to `.env`
+   - Fill in your Supabase credentials:
+     - `SUPABASE_URL`: Your Supabase project URL
+     - `SUPABASE_ANON_KEY`: Your Supabase anonymous key
+     - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
+
+3. **Database Setup**:
+   - Create the required tables in your Supabase database using the SQL schema provided
+   - Ensure all tables are created with proper relationships
+
+4. **Stock Data**:
+   - Place your stock data CSV files in the `stock_data/` directory
+   - Files should be named as `{SYMBOL}_NS.csv` (e.g., `BHARTIARTL_NS.csv`)
+
+## Running the Application
+
+### Development
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Production
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+## API Documentation
+
+Once the server is running, you can access:
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/api/v1/openapi.json
+
+## API Endpoints
+
+### Strategies
+- `POST /api/v1/strategies/` - Create a new strategy
+- `GET /api/v1/strategies/` - List user's strategies
+- `GET /api/v1/strategies/{id}` - Get specific strategy
+- `PUT /api/v1/strategies/{id}` - Update strategy
+- `DELETE /api/v1/strategies/{id}` - Delete strategy
+
+### Backtests
+- `POST /api/v1/backtests/` - Run a backtest
+- `GET /api/v1/backtests/` - List user's backtests
+- `GET /api/v1/backtests/{id}` - Get specific backtest
+- `GET /api/v1/backtests/strategy/{strategy_id}` - List backtests for a strategy
+
+### Paper Trading
+- `POST /api/v1/paper-trades/` - Create paper trade
+- `GET /api/v1/paper-trades/` - List user's paper trades
+- `GET /api/v1/paper-trades/{id}` - Get specific paper trade
+- `PUT /api/v1/paper-trades/{id}` - Update paper trade
+
+### Risk Reports
+- `GET /api/v1/risk-reports/{backtest_id}` - Get or generate risk report
+
+### Marketplace
+- `POST /api/v1/marketplace/` - Add strategy to marketplace
+- `GET /api/v1/marketplace/` - List marketplace strategies
+- `POST /api/v1/marketplace/{id}/like` - Like a strategy
+- `POST /api/v1/marketplace/{id}/fork` - Fork a strategy
+
+### Education
+- `POST /api/v1/education/` - Create education content
+- `GET /api/v1/education/` - List education content
+- `GET /api/v1/education/{id}` - Get specific education content
+
+### User Progress
+- `POST /api/v1/user-progress/` - Create/update user progress
+- `GET /api/v1/user-progress/` - List user's progress
+
+### Compliance
+- `POST /api/v1/compliance/` - Create compliance log
+- `GET /api/v1/compliance/` - List compliance logs
+
+## Authentication
+
+The API uses Supabase for authentication. Include the Bearer token in the Authorization header:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+## Stock Data Format
+
+Stock data CSV files should contain the following columns:
+- `Date`: Date in YYYY-MM-DD format
+- `Open`: Opening price
+- `High`: High price
+- `Low`: Low price
+- `Close`: Closing price
+- `Volume`: Trading volume
+- Additional technical indicators (RSI, MACD, etc.)
+
+## Backtesting
+
+The backtesting engine supports:
+- Multiple technical indicators (SMA, RSI, MACD, etc.)
+- Custom strategy configurations
+- Comprehensive performance metrics
+- Risk analysis and reporting
+
+## Contributing
+
+1. Follow the existing code structure
+2. Add proper error handling
+3. Include type hints
+4. Write comprehensive docstrings
+5. Test your changes thoroughly
+
+## License
+
+This project is part of the QuantEase platform.
