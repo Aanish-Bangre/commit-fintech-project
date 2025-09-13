@@ -109,7 +109,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-500">23 trades</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                 <div>
                   <p className="font-medium">MACD Crossover</p>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-gray-500">12 trades</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                 <div>
                   <p className="font-medium">Bollinger Bands</p>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                   <span className="text-green-600 text-sm ml-2">+0.8%</span>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">SENSEX</span>
                 <div className="text-right">
@@ -152,7 +152,7 @@ export default function DashboardPage() {
                   <span className="text-green-600 text-sm ml-2">+0.6%</span>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">BANK NIFTY</span>
                 <div className="text-right">
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                   <span className="text-red-600 text-sm ml-2">-0.3%</span>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">VIX</span>
                 <div className="text-right">

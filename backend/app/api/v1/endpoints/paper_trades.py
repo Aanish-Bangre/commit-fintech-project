@@ -1,193 +1,216 @@
-import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from starlette.concurrency import run_in_threadpool
 
 from app.core.database import supabase
-from app.models.paper_trade import PaperTradeCreate, PaperTradeOut, PaperTradeUpdate
+from app.models.paper_trade import (
+    PaperTradeCreate, PaperTradeOut, PaperTradeUpdate, 
+    PortfolioSummary, Position, MarketData, PaperTradeStats
+)
 from app.services.auth import get_current_user
+from app.services.paper_trading import paper_trading_service
+from app.services.market_data import market_data_service
 
 router = APIRouter()
 
 
-@router.post("/", response_model=PaperTradeOut)
-async def create_paper_trade(payload: PaperTradeCreate, user=Depends(get_current_user)):
-    """Create a new paper trade"""
-    trade_id = uuid.uuid4()
-    now = datetime.utcnow().isoformat()
-    
-    row = {
-        "id": str(trade_id),
-        "user_id": user["id"],
-        "strategy_id": str(payload.strategy_id) if payload.strategy_id else None,
-        "symbol": payload.symbol,
-        "side": payload.side,
-        "qty": payload.qty,
-        "price": payload.price,
-        "status": "open",
-        "pnl": None,
-        "created_at": now,
-    }
-    
-    res = await run_in_threadpool(supabase.table("paper_trades").insert, row)
-    
-    if res.error:
+@router.get("/portfolio", response_model=PortfolioSummary)
+async def get_portfolio(user=Depends(get_current_user)):
+    """Get user's paper trading portfolio"""
+    try:
+        portfolio = await paper_trading_service.get_user_portfolio(user["id"])
+        return PortfolioSummary(**portfolio)
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create paper trade: {res.error}"
+            detail=f"Failed to get portfolio: {str(e)}"
         )
-    
-    return PaperTradeOut(
-        id=trade_id,
-        user_id=UUID(user["id"]),
-        strategy_id=payload.strategy_id,
-        symbol=payload.symbol,
-        side=payload.side,
-        qty=payload.qty,
-        price=payload.price,
-        status="open",
-        pnl=None,
-        created_at=datetime.fromisoformat(now),
-    )
 
 
-@router.get("/", response_model=List[PaperTradeOut])
-async def list_paper_trades(user=Depends(get_current_user)):
-    """List all paper trades for the current user"""
-    resp = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .select("*")
-        .eq("user_id", user["id"])
-        .order("created_at", desc=True)
-    )
-    
-    data = resp.data if getattr(resp, "data", None) else []
-    trades = []
-    
-    for item in data:
-        trades.append(PaperTradeOut(
-            id=UUID(item["id"]),
-            user_id=UUID(item["user_id"]),
-            strategy_id=UUID(item["strategy_id"]) if item.get("strategy_id") else None,
-            symbol=item["symbol"],
-            side=item["side"],
-            qty=float(item["qty"]),
-            price=float(item["price"]),
-            status=item.get("status", "open"),
-            pnl=float(item["pnl"]) if item.get("pnl") is not None else None,
-            created_at=datetime.fromisoformat(item["created_at"]),
-        ))
-    
-    return trades
-
-
-@router.get("/{trade_id}", response_model=PaperTradeOut)
-async def get_paper_trade(trade_id: UUID, user=Depends(get_current_user)):
-    """Get a specific paper trade"""
-    resp = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .select("*")
-        .eq("id", str(trade_id))
-        .eq("user_id", user["id"])
-        .single
-    )
-    
-    if not resp.data:
-        raise HTTPException(status_code=404, detail="Paper trade not found")
-    
-    item = resp.data
-    return PaperTradeOut(
-        id=UUID(item["id"]),
-        user_id=UUID(item["user_id"]),
-        strategy_id=UUID(item["strategy_id"]) if item.get("strategy_id") else None,
-        symbol=item["symbol"],
-        side=item["side"],
-        qty=float(item["qty"]),
-        price=float(item["price"]),
-        status=item.get("status", "open"),
-        pnl=float(item["pnl"]) if item.get("pnl") is not None else None,
-        created_at=datetime.fromisoformat(item["created_at"]),
-    )
-
-
-@router.put("/{trade_id}", response_model=PaperTradeOut)
-async def update_paper_trade(
-    trade_id: UUID, 
-    payload: PaperTradeUpdate, 
-    user=Depends(get_current_user)
-):
-    """Update a paper trade"""
-    # Check if trade exists and belongs to user
-    resp = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .select("*")
-        .eq("id", str(trade_id))
-        .eq("user_id", user["id"])
-        .single
-    )
-    
-    if not resp.data:
-        raise HTTPException(status_code=404, detail="Paper trade not found")
-    
-    # Prepare update data
-    update_data = {}
-    if payload.status is not None:
-        update_data["status"] = payload.status
-    if payload.pnl is not None:
-        update_data["pnl"] = payload.pnl
-    
-    if not update_data:
+@router.post("/trade", response_model=PaperTradeOut)
+async def execute_trade(trade_data: PaperTradeCreate, user=Depends(get_current_user)):
+    """Execute a paper trade"""
+    try:
+        result = await paper_trading_service.execute_trade(
+            user_id=user["id"],
+            symbol=trade_data.symbol,
+            action=trade_data.action,
+            quantity=trade_data.quantity,
+            price=trade_data.price,
+            order_type=trade_data.order_type,
+            notes=trade_data.notes
+        )
+        
+        return PaperTradeOut(**result)
+        
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No fields to update"
+            detail=str(e)
         )
-    
-    # Update trade
-    res = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .update(update_data)
-        .eq("id", str(trade_id))
-    )
-    
-    if res.error:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update paper trade: {res.error}"
+            detail=f"Failed to execute trade: {str(e)}"
         )
-    
-    # Return updated trade
-    return await get_paper_trade(trade_id, user)
 
 
-@router.delete("/{trade_id}")
-async def delete_paper_trade(trade_id: UUID, user=Depends(get_current_user)):
-    """Delete a paper trade"""
-    # Check if trade exists and belongs to user
-    resp = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .select("id")
-        .eq("id", str(trade_id))
-        .eq("user_id", user["id"])
-        .single
-    )
-    
-    if not resp.data:
-        raise HTTPException(status_code=404, detail="Paper trade not found")
-    
-    # Delete trade
-    res = await run_in_threadpool(
-        supabase.table("paper_trades")
-        .delete()
-        .eq("id", str(trade_id))
-    )
-    
-    if res.error:
+@router.get("/trades", response_model=List[PaperTradeOut])
+async def get_trade_history(limit: int = 50, user=Depends(get_current_user)):
+    """Get user's trade history"""
+    try:
+        trades = await paper_trading_service.get_trade_history(user["id"], limit)
+        return [PaperTradeOut(**trade) for trade in trades]
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete paper trade: {res.error}"
+            detail=f"Failed to get trade history: {str(e)}"
         )
-    
-    return {"message": "Paper trade deleted successfully"}
+
+
+@router.get("/stats", response_model=PaperTradeStats)
+async def get_trading_stats(user=Depends(get_current_user)):
+    """Get user's trading statistics"""
+    try:
+        stats = await paper_trading_service.get_trading_stats(user["id"])
+        return PaperTradeStats(**stats)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get trading stats: {str(e)}"
+        )
+
+
+@router.get("/market-data/{symbol}", response_model=MarketData)
+async def get_market_data(symbol: str, user=Depends(get_current_user)):
+    """Get real-time market data for a symbol"""
+    try:
+        market_data = await market_data_service.get_market_data(symbol)
+        return MarketData(**market_data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get market data: {str(e)}"
+        )
+
+
+@router.get("/market-data", response_model=List[MarketData])
+async def get_multiple_market_data(symbols: str, user=Depends(get_current_user)):
+    """Get real-time market data for multiple symbols (comma-separated)"""
+    try:
+        symbol_list = [s.strip() for s in symbols.split(",")]
+        market_data_list = []
+        
+        for symbol in symbol_list:
+            try:
+                data = await market_data_service.get_market_data(symbol)
+                market_data_list.append(MarketData(**data))
+            except Exception as e:
+                # Skip symbols that fail, but continue with others
+                continue
+        
+        return market_data_list
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get market data: {str(e)}"
+        )
+
+
+@router.get("/positions", response_model=List[Position])
+async def get_positions(user=Depends(get_current_user)):
+    """Get user's current positions"""
+    try:
+        portfolio = await paper_trading_service.get_user_portfolio(user["id"])
+        return [Position(**pos) for pos in portfolio["positions"]]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get positions: {str(e)}"
+        )
+
+
+@router.get("/price/{symbol}")
+async def get_current_price(symbol: str, user=Depends(get_current_user)):
+    """Get current price for a symbol"""
+    try:
+        price = await market_data_service.get_current_price(symbol)
+        return {"symbol": symbol, "price": price, "timestamp": datetime.utcnow()}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get price: {str(e)}"
+        )
+
+
+@router.post("/reset-portfolio")
+async def reset_portfolio(user=Depends(get_current_user)):
+    """Reset user's portfolio to initial state"""
+    try:
+        # Delete all positions
+        await run_in_threadpool(
+            lambda: supabase.table("paper_positions")
+            .delete()
+            .eq("user_id", user["id"])
+            .execute()
+        )
+        
+        # Reset cash balance
+        await run_in_threadpool(
+            lambda: supabase.table("user_portfolios")
+            .update({"cash_balance": 1000000})  # Reset to ₹10,00,000
+            .eq("user_id", user["id"])
+            .execute()
+        )
+        
+        return {"message": "Portfolio reset successfully", "cash_balance": 1000000}
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to reset portfolio: {str(e)}"
+        )
+
+
+@router.get("/trade/{trade_id}", response_model=PaperTradeOut)
+async def get_trade(trade_id: UUID, user=Depends(get_current_user)):
+    """Get a specific trade by ID"""
+    try:
+        trade_resp = await run_in_threadpool(
+            lambda: supabase.table("paper_trades")
+            .select("*")
+            .eq("id", str(trade_id))
+            .eq("user_id", user["id"])
+            .single()
+            .execute()
+        )
+        
+        if not getattr(trade_resp, "data", None):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Trade not found"
+            )
+        
+        return PaperTradeOut(**trade_resp.data)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get trade: {str(e)}"
+        )

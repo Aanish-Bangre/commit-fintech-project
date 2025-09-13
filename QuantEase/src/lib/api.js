@@ -100,15 +100,49 @@ class QuantEaseAPI {
   }
 
   // Paper Trading
-  async createPaperTrade(trade) {
-    return this.request('/paper-trades', {
+  async getPortfolio() {
+    return this.request('/paper-trades/portfolio')
+  }
+
+  async executeTrade(tradeData) {
+    return this.request('/paper-trades/trade', {
       method: 'POST',
-      body: JSON.stringify(trade)
+      body: JSON.stringify(tradeData)
     })
   }
 
-  async getPaperTrades() {
-    return this.request('/paper-trades')
+  async getTradeHistory(limit = 50) {
+    return this.request(`/paper-trades/trades?limit=${limit}`)
+  }
+
+  async getTradingStats() {
+    return this.request('/paper-trades/stats')
+  }
+
+  async getMarketData(symbol) {
+    return this.request(`/paper-trades/market-data/${symbol}`)
+  }
+
+  async getMultipleMarketData(symbols) {
+    return this.request(`/paper-trades/market-data?symbols=${symbols}`)
+  }
+
+  async getPositions() {
+    return this.request('/paper-trades/positions')
+  }
+
+  async getCurrentPrice(symbol) {
+    return this.request(`/paper-trades/price/${symbol}`)
+  }
+
+  async resetPortfolio() {
+    return this.request('/paper-trades/reset-portfolio', {
+      method: 'POST'
+    })
+  }
+
+  async getTrade(tradeId) {
+    return this.request(`/paper-trades/trade/${tradeId}`)
   }
 
   // Marketplace

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.api import api_router
+import asyncio
 
 # Create FastAPI application
 app = FastAPI(
@@ -42,6 +43,20 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "version": settings.app_version}
 
+
+# WebSocket service startup (disabled for now)
+# @app.on_event("startup")
+# async def startup_event():
+#     """Start WebSocket service on startup"""
+#     from app.services.websocket_service import websocket_service
+#     # Start the market data update loop
+#     asyncio.create_task(websocket_service.start_market_data_updates())
+
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     """Stop WebSocket service on shutdown"""
+#     from app.services.websocket_service import websocket_service
+#     await websocket_service.stop_market_data_updates()
 
 if __name__ == "__main__":
     import uvicorn

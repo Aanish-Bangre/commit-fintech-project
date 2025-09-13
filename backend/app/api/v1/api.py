@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import strategies, backtests, paper_trades, risk_reports, marketplace, comments, education, user_progress, compliance
+from app.api.v1.endpoints import strategies, backtests, paper_trades, risk_reports, marketplace, comments, education, user_progress, compliance, websocket
 
 api_router = APIRouter()
 
@@ -12,3 +12,4 @@ api_router.include_router(comments.router, prefix="/comments", tags=["comments"]
 api_router.include_router(education.router, prefix="/education", tags=["education"])
 api_router.include_router(user_progress.router, prefix="/user-progress", tags=["user-progress"])
 api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
+api_router.include_router(websocket.router, prefix="", tags=["websocket"])
