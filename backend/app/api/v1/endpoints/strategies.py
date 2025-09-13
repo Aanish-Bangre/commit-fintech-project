@@ -37,7 +37,9 @@ async def create_strategy(payload: StrategyCreate, user=Depends(get_current_user
     }
 
     # Insert into Supabase
-    res = await run_in_threadpool(lambda: supabase.table("strategies").insert(row).execute())
+    res = await run_in_threadpool(
+        lambda: supabase.table("strategies").insert(row).execute()
+    )
     
     if res.data is None:
         raise HTTPException(
@@ -62,10 +64,11 @@ async def create_strategy(payload: StrategyCreate, user=Depends(get_current_user
 async def get_strategy(strategy_id: UUID, user=Depends(get_current_user)):
     """Get a specific strategy by ID"""
     resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("*")
         .eq("id", str(strategy_id))
-        .single
+        .single()
+        .execute()
     )
     
     if not resp or getattr(resp, "data", None) is None:
@@ -89,10 +92,11 @@ async def get_strategy(strategy_id: UUID, user=Depends(get_current_user)):
 async def list_strategies(user=Depends(get_current_user)):
     """List all strategies for the current user"""
     resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("*")
         .eq("user_id", user["id"])
         .order("created_at", desc=True)
+        .execute()
     )
     
     data = resp.data if getattr(resp, "data", None) else []
@@ -123,11 +127,12 @@ async def update_strategy(
     """Update a strategy"""
     # Check if strategy exists and belongs to user
     resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("*")
         .eq("id", str(strategy_id))
         .eq("user_id", user["id"])
-        .single
+        .single()
+        .execute()
     )
     
     if not resp or getattr(resp, "data", None) is None:
@@ -151,15 +156,16 @@ async def update_strategy(
     
     # Update strategy
     res = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .update(update_data)
         .eq("id", str(strategy_id))
+        .execute()
     )
     
-    if res.error:
+    if not res.data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update strategy: {res.error}"
+            detail="Failed to update strategy"
         )
     
     # Return updated strategy
@@ -171,11 +177,12 @@ async def delete_strategy(strategy_id: UUID, user=Depends(get_current_user)):
     """Delete a strategy"""
     # Check if strategy exists and belongs to user
     resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("id")
         .eq("id", str(strategy_id))
         .eq("user_id", user["id"])
-        .single
+        .single()
+        .execute()
     )
     
     if not resp or getattr(resp, "data", None) is None:
@@ -183,15 +190,16 @@ async def delete_strategy(strategy_id: UUID, user=Depends(get_current_user)):
     
     # Delete strategy
     res = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .delete()
         .eq("id", str(strategy_id))
+        .execute()
     )
     
-    if res.error:
+    if not res.data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete strategy: {res.error}"
+            detail="Failed to delete strategy"
         )
     
     return {"message": "Strategy deleted successfully"}

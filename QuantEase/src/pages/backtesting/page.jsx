@@ -10,11 +10,13 @@ export default function BacktestingPage() {
   const [loading, setLoading] = useState(false);
   const [currentBacktest, setCurrentBacktest] = useState(null);
   const [backtestHistory, setBacktestHistory] = useState([]);
+  const [strategies, setStrategies] = useState([]);
   const [error, setError] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     loadBacktestHistory();
+    loadStrategies();
   }, []);
 
   const loadBacktestHistory = async () => {
@@ -23,6 +25,15 @@ export default function BacktestingPage() {
       setBacktestHistory(backtests);
     } catch (error) {
       console.error('Error loading backtest history:', error);
+    }
+  };
+
+  const loadStrategies = async () => {
+    try {
+      const userStrategies = await api.getStrategies();
+      setStrategies(userStrategies);
+    } catch (error) {
+      console.error('Error loading strategies:', error);
     }
   };
 
@@ -44,6 +55,7 @@ export default function BacktestingPage() {
       const backtest = await api.runBacktest(backtestConfig);
       setCurrentBacktest(backtest);
       await loadBacktestHistory(); // Refresh history
+      await loadStrategies(); // Refresh strategies
     } catch (error) {
       console.error('Error running backtest:', error);
       setError(error.message);
@@ -151,6 +163,7 @@ export default function BacktestingPage() {
                 onStrategyCreate={handleStrategyCreate}
                 onBacktestRun={handleBacktestRun}
                 loading={loading}
+                existingStrategies={strategies}
               />
             </div>
 

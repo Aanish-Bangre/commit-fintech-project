@@ -23,10 +23,11 @@ async def run_backtest_endpoint(payload: BacktestCreate, user=Depends(get_curren
     """
     # Fetch strategy to ensure it exists and user has access
     sresp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("*")
         .eq("id", str(payload.strategy_id))
-        .single
+        .single()
+        .execute()
     )
     
     if sresp is None or getattr(sresp, "data", None) is None:
@@ -61,8 +62,8 @@ async def run_backtest_endpoint(payload: BacktestCreate, user=Depends(get_curren
         
         # Create simple signals
         df["Close"] = df["Close"].astype(float)
-        df["sma_10"] = df["Close"].rolling(10).mean().fillna(method="bfill")
-        df["sma_50"] = df["Close"].rolling(50).mean().fillna(method="bfill")
+        df["sma_10"] = df["Close"].rolling(10).mean().bfill()
+        df["sma_50"] = df["Close"].rolling(50).mean().bfill()
         df["signal"] = 0
         df.loc[(df["sma_10"].shift(1) < df["sma_50"].shift(1)) & (df["sma_10"] > df["sma_50"]), "signal"] = 1
         df.loc[(df["sma_10"].shift(1) > df["sma_50"].shift(1)) & (df["sma_10"] < df["sma_50"]), "signal"] = -1
@@ -95,12 +96,14 @@ async def run_backtest_endpoint(payload: BacktestCreate, user=Depends(get_curren
         "created_at": now,
     }
     
-    res = await run_in_threadpool(supabase.table("backtests").insert, row)
+    res = await run_in_threadpool(
+        lambda: supabase.table("backtests").insert(row).execute()
+    )
     
-    if res.error:
+    if not res.data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save backtest: {res.error}"
+            detail="Failed to save backtest"
         )
 
     return BacktestOut(
@@ -119,10 +122,11 @@ async def run_backtest_endpoint(payload: BacktestCreate, user=Depends(get_curren
 async def get_backtest(backtest_id: UUID, user=Depends(get_current_user)):
     """Get a specific backtest by ID"""
     resp = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .select("*")
         .eq("id", str(backtest_id))
-        .single
+        .single()
+        .execute()
     )
     
     if resp is None or getattr(resp, "data", None) is None:
@@ -146,9 +150,10 @@ async def list_backtests(user=Depends(get_current_user)):
     """List all backtests for the current user's strategies"""
     # First get user's strategies
     strategies_resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("id")
         .eq("user_id", user["id"])
+        .execute()
     )
     
     if not strategies_resp.data:
@@ -158,10 +163,11 @@ async def list_backtests(user=Depends(get_current_user)):
     
     # Get backtests for these strategies
     resp = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .select("*")
         .in_("strategy_id", strategy_ids)
         .order("created_at", desc=True)
+        .execute()
     )
     
     data = resp.data if getattr(resp, "data", None) else []
@@ -187,11 +193,12 @@ async def list_strategy_backtests(strategy_id: UUID, user=Depends(get_current_us
     """List all backtests for a specific strategy"""
     # Verify strategy belongs to user
     strategy_resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("id")
         .eq("id", str(strategy_id))
         .eq("user_id", user["id"])
-        .single
+        .single()
+        .execute()
     )
     
     if not strategy_resp.data:
@@ -199,10 +206,11 @@ async def list_strategy_backtests(strategy_id: UUID, user=Depends(get_current_us
     
     # Get backtests for this strategy
     resp = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .select("*")
         .eq("strategy_id", str(strategy_id))
         .order("created_at", desc=True)
+        .execute()
     )
     
     data = resp.data if getattr(resp, "data", None) else []
@@ -228,10 +236,11 @@ async def delete_backtest(backtest_id: UUID, user=Depends(get_current_user)):
     """Delete a backtest"""
     # Verify backtest belongs to user's strategy
     resp = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .select("strategy_id")
         .eq("id", str(backtest_id))
-        .single
+        .single()
+        .execute()
     )
     
     if not resp.data:
@@ -239,11 +248,12 @@ async def delete_backtest(backtest_id: UUID, user=Depends(get_current_user)):
     
     # Check if strategy belongs to user
     strategy_resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("id")
         .eq("id", resp.data["strategy_id"])
         .eq("user_id", user["id"])
-        .single
+        .single()
+        .execute()
     )
     
     if not strategy_resp.data:
@@ -251,15 +261,16 @@ async def delete_backtest(backtest_id: UUID, user=Depends(get_current_user)):
     
     # Delete backtest
     res = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .delete()
         .eq("id", str(backtest_id))
+        .execute()
     )
     
-    if res.error:
+    if not res.data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete backtest: {res.error}"
+            detail="Failed to delete backtest"
         )
     
     return {"message": "Backtest deleted successfully"}

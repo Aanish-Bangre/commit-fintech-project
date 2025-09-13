@@ -10,7 +10,11 @@ def load_stock_data(symbol: str, start_date: date, end_date: date) -> pd.DataFra
     """
     Load stock data from CSV files in the stock_data directory.
     """
-    file_path = os.path.join(settings.stock_data_path, f"{symbol}_NS.csv")
+    # Ensure symbol has _NS suffix
+    if not symbol.endswith("_NS"):
+        symbol = f"{symbol}_NS"
+    
+    file_path = os.path.join(settings.stock_data_path, f"{symbol}.csv")
     
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Stock data file not found: {file_path}")
@@ -38,38 +42,106 @@ def generate_python_from_config(config: dict) -> str:
 
     # Add indicators based on config
     indicators = config.get("indicators", [])
+    sma_windows = []
+    rsi_periods = []
+    macd_configs = []
+    
     for ind in indicators:
         if ind.get("type") == "SMA":
             w = ind.get("window", 50)
+            sma_windows.append(w)
             code_lines.append(f"    df['sma_{w}'] = df['Close'].rolling({w}).mean()")
+        elif ind.get("type") == "EMA":
+            span = ind.get("span", 12)
+            code_lines.append(f"    df['ema_{span}'] = df['Close'].ewm(span={span}).mean()")
         elif ind.get("type") == "RSI":
             period = ind.get("window", 14)
+            rsi_periods.append(period)
             code_lines.append("    delta = df['Close'].diff()")
             code_lines.append("    up = delta.clip(lower=0)")
             code_lines.append("    down = -1 * delta.clip(upper=0)")
             code_lines.append(f"    ma_up = up.rolling({period}).mean()")
             code_lines.append(f"    ma_down = down.rolling({period}).mean()")
             code_lines.append("    rs = ma_up / ma_down")
-            code_lines.append("    df['rsi'] = 100 - (100 / (1 + rs))")
+            code_lines.append(f"    df['rsi_{period}'] = 100 - (100 / (1 + rs))")
         elif ind.get("type") == "MACD":
             fast = ind.get("fast", 12)
             slow = ind.get("slow", 26)
             signal = ind.get("signal", 9)
+            macd_configs.append((fast, slow, signal))
             code_lines.append(f"    exp1 = df['Close'].ewm(span={fast}).mean()")
             code_lines.append(f"    exp2 = df['Close'].ewm(span={slow}).mean()")
-            code_lines.append("    df['macd'] = exp1 - exp2")
-            code_lines.append(f"    df['macd_signal'] = df['macd'].ewm(span={signal}).mean()")
-            code_lines.append("    df['macd_histogram'] = df['macd'] - df['macd_signal']")
+            code_lines.append(f"    df['macd_{fast}_{slow}'] = exp1 - exp2")
+            code_lines.append(f"    df['macd_signal_{fast}_{slow}'] = df['macd_{fast}_{slow}'].ewm(span={signal}).mean()")
+            code_lines.append(f"    df['macd_histogram_{fast}_{slow}'] = df['macd_{fast}_{slow}'] - df['macd_signal_{fast}_{slow}']")
+        elif ind.get("type") == "BB":
+            window = ind.get("window", 20)
+            std = ind.get("std", 2)
+            code_lines.append(f"    df['bb_middle_{window}'] = df['Close'].rolling({window}).mean()")
+            code_lines.append(f"    bb_std = df['Close'].rolling({window}).std()")
+            code_lines.append(f"    df['bb_upper_{window}'] = df['bb_middle_{window}'] + (bb_std * {std})")
+            code_lines.append(f"    df['bb_lower_{window}'] = df['bb_middle_{window}'] - (bb_std * {std})")
+        elif ind.get("type") == "ATR":
+            window = ind.get("window", 14)
+            code_lines.append("    high_low = df['High'] - df['Low']")
+            code_lines.append("    high_close = np.abs(df['High'] - df['Close'].shift())")
+            code_lines.append("    low_close = np.abs(df['Low'] - df['Close'].shift())")
+            code_lines.append("    ranges = pd.concat([high_low, high_close, low_close], axis=1)")
+            code_lines.append("    true_range = np.max(ranges, axis=1)")
+            code_lines.append(f"    df['atr_{window}'] = true_range.rolling({window}).mean()")
+        elif ind.get("type") == "ADX":
+            window = ind.get("window", 14)
+            code_lines.append("    # ADX calculation")
+            code_lines.append("    high_low = df['High'] - df['Low']")
+            code_lines.append("    high_close = np.abs(df['High'] - df['Close'].shift())")
+            code_lines.append("    low_close = np.abs(df['Low'] - df['Close'].shift())")
+            code_lines.append("    true_range = np.max(pd.concat([high_low, high_close, low_close], axis=1), axis=1)")
+            code_lines.append("    plus_dm = df['High'].diff()")
+            code_lines.append("    minus_dm = df['Low'].diff()")
+            code_lines.append("    plus_dm[plus_dm < 0] = 0")
+            code_lines.append("    minus_dm[minus_dm > 0] = 0")
+            code_lines.append("    minus_dm = np.abs(minus_dm)")
+            code_lines.append(f"    plus_di = 100 * (plus_dm.rolling({window}).mean() / true_range.rolling({window}).mean())")
+            code_lines.append(f"    minus_di = 100 * (minus_dm.rolling({window}).mean() / true_range.rolling({window}).mean())")
+            code_lines.append(f"    dx = 100 * np.abs(plus_di - minus_di) / (plus_di + minus_di)")
+            code_lines.append(f"    df['adx_{window}'] = dx.rolling({window}).mean()")
 
     # Add signal generation logic
     code_lines.append("    # Signal generation")
     code_lines.append("    df['signal'] = 0")
     
-    # Simple SMA crossover strategy as default
-    if any(ind.get("type") == "SMA" for ind in indicators):
-        code_lines.append("    # SMA Crossover Strategy")
-        code_lines.append("    df['signal'] = np.where(df['sma_10'] > df['sma_50'], 1, 0)")
+    # Generate signals based on available indicators
+    if len(sma_windows) >= 2:
+        # SMA Crossover Strategy
+        sma_windows.sort()
+        fast_sma = sma_windows[0]
+        slow_sma = sma_windows[1]
+        code_lines.append(f"    # SMA Crossover Strategy ({fast_sma} vs {slow_sma})")
+        code_lines.append(f"    df['signal'] = np.where(df['sma_{fast_sma}'] > df['sma_{slow_sma}'], 1, 0)")
         code_lines.append("    df['signal'] = df['signal'].diff()")
+    elif len(rsi_periods) > 0:
+        # RSI Strategy
+        rsi_period = rsi_periods[0]
+        code_lines.append(f"    # RSI Strategy (period {rsi_period})")
+        code_lines.append(f"    df['signal'] = np.where(df['rsi_{rsi_period}'] < 30, 1, 0)")  # Oversold
+        code_lines.append(f"    df['signal'] = np.where(df['rsi_{rsi_period}'] > 70, -1, df['signal'])")  # Overbought
+        code_lines.append("    df['signal'] = df['signal'].diff()")
+    elif len(macd_configs) > 0:
+        # MACD Strategy
+        fast, slow, signal = macd_configs[0]
+        code_lines.append(f"    # MACD Strategy ({fast}, {slow}, {signal})")
+        code_lines.append(f"    df['signal'] = np.where(df['macd_{fast}_{slow}'] > df['macd_signal_{fast}_{slow}'], 1, 0)")
+        code_lines.append("    df['signal'] = df['signal'].diff()")
+    else:
+        # Default: Simple momentum strategy
+        code_lines.append("    # Default momentum strategy")
+        code_lines.append("    df['returns'] = df['Close'].pct_change()")
+        code_lines.append("    df['signal'] = np.where(df['returns'] > 0.01, 1, 0)")  # 1% threshold
+        code_lines.append("    df['signal'] = df['signal'].diff()")
+    
+    # Clean up NaN values in signal
+    code_lines.append("    # Clean up NaN values in signal")
+    code_lines.append("    df['signal'] = df['signal'].fillna(0)")
     
     code_lines.append("    return df")
 
@@ -100,7 +172,12 @@ def simple_vector_backtest(
 
     for i, row in df.iterrows():
         price = float(row["Close"])
-        signal = int(row.get(entry_signal_col, 0))
+        signal_val = row.get(entry_signal_col, 0)
+        # Handle NaN values in signal
+        if pd.isna(signal_val):
+            signal = 0
+        else:
+            signal = int(signal_val)
         
         if signal == 1 and position == 0:
             # Enter long position

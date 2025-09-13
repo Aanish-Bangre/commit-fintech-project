@@ -17,15 +17,15 @@ async def get_risk_report(backtest_id: UUID, user=Depends(get_current_user)):
     """Get or generate a risk report for a backtest"""
     # First check if a risk report already exists
     resp = await run_in_threadpool(
-        supabase.table("risk_reports")
+        lambda: supabase.table("risk_reports")
         .select("*")
         .eq("backtest_id", str(backtest_id))
-        .single
+        .execute()
     )
     
-    if getattr(resp, "data", None):
+    if getattr(resp, "data", None) and len(resp.data) > 0:
         # Return existing report
-        d = resp.data
+        d = resp.data[0]
         return RiskReportOut(
             id=UUID(d["id"]),
             backtest_id=UUID(d["backtest_id"]),
@@ -39,29 +39,31 @@ async def get_risk_report(backtest_id: UUID, user=Depends(get_current_user)):
 
     # If no report exists, verify backtest belongs to user and generate one
     bresp = await run_in_threadpool(
-        supabase.table("backtests")
+        lambda: supabase.table("backtests")
         .select("strategy_id, metrics_json")
         .eq("id", str(backtest_id))
-        .single
+        .execute()
     )
     
-    if not getattr(bresp, "data", None):
+    if not getattr(bresp, "data", None) or len(bresp.data) == 0:
         raise HTTPException(status_code=404, detail="Backtest not found")
+    
+    backtest_data = bresp.data[0]
     
     # Verify strategy belongs to user
     strategy_resp = await run_in_threadpool(
-        supabase.table("strategies")
+        lambda: supabase.table("strategies")
         .select("id")
-        .eq("id", bresp.data["strategy_id"])
+        .eq("id", backtest_data["strategy_id"])
         .eq("user_id", user["id"])
-        .single
+        .execute()
     )
     
-    if not strategy_resp.data:
+    if not getattr(strategy_resp, "data", None) or len(strategy_resp.data) == 0:
         raise HTTPException(status_code=403, detail="Access denied")
 
     # Generate risk report from backtest metrics
-    metrics = bresp.data.get("metrics_json", {})
+    metrics = backtest_data.get("metrics_json", {})
     sharpe = metrics.get("sharpe", 0.0)
     max_dd = metrics.get("max_drawdown", -1.0)
     volatility = metrics.get("volatility", 0.0)
@@ -106,12 +108,14 @@ async def get_risk_report(backtest_id: UUID, user=Depends(get_current_user)):
         "created_at": now,
     }
     
-    res = await run_in_threadpool(supabase.table("risk_reports").insert, row)
+    res = await run_in_threadpool(
+        lambda: supabase.table("risk_reports").insert(row).execute()
+    )
     
-    if res.error:
+    if not res.data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create risk report: {res.error}"
+            detail="Failed to create risk report"
         )
     
     return RiskReportOut(
