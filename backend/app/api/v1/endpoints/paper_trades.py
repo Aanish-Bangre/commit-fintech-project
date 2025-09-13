@@ -191,7 +191,7 @@ async def get_trade(trade_id: UUID, user=Depends(get_current_user)):
     """Get a specific trade by ID"""
     try:
         trade_resp = await run_in_threadpool(
-            lambda: supabase.table("paper_trades")
+            lambda: supabase.table("paper_trading_trades")
             .select("*")
             .eq("id", str(trade_id))
             .eq("user_id", user["id"])

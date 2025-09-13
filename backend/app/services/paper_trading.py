@@ -183,15 +183,20 @@ class PaperTradingService:
             # Update portfolio
             await self._update_portfolio(user_id, symbol, action, quantity, price, total_value)
             
+            # Return the full trade data that matches PaperTradeOut model
             return {
-                "trade_id": str(trade_id),
+                "id": trade_id,
+                "user_id": user_id,
                 "symbol": symbol,
                 "action": action,
                 "quantity": quantity,
                 "price": price,
+                "order_type": order_type,
                 "total_value": total_value,
-                "status": "executed",
-                "executed_at": now
+                "notes": notes,
+                "created_at": now,
+                "executed_at": now,
+                "status": "executed"
             }
             
         except Exception as e:

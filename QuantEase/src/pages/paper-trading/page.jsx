@@ -139,10 +139,13 @@ export default function PaperTradingPage() {
         quantity: parseInt(tradeQuantity),
         price: tradePrice ? parseFloat(tradePrice) : null,
         order_type: 'market',
-        notes: tradeNotes
+        notes: tradeNotes || null  // Ensure null if empty
       }
 
-      await api.executeTrade(tradeData)
+      console.log('Executing trade with data:', tradeData)
+      
+      const result = await api.executeTrade(tradeData)
+      console.log('Trade executed successfully:', result)
 
       // Reset form
       setSelectedSymbol('')
@@ -156,7 +159,8 @@ export default function PaperTradingPage() {
 
     } catch (err) {
       console.error('Error executing trade:', err)
-      setError(err.message)
+      const errorMessage = err.response?.data?.detail || err.message || 'Failed to execute trade'
+      setError(errorMessage)
     } finally {
       setExecutingTrade(false)
     }
@@ -185,10 +189,10 @@ export default function PaperTradingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  text-white flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-gray-600">Loading portfolio data...</p>
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-400" />
+          <p className="text-gray-300">Loading portfolio data...</p>
         </div>
       </div>
     )
@@ -196,10 +200,10 @@ export default function PaperTradingPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  text-white flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-8 h-8 mx-auto mb-4 text-red-600" />
-          <p className="text-red-600 mb-4">{error}</p>
+          <AlertCircle className="w-8 h-8 mx-auto mb-4 text-red-400" />
+          <p className="text-red-400 mb-4">{error}</p>
           <Button onClick={loadPortfolioData}>Retry</Button>
         </div>
       </div>
@@ -207,21 +211,21 @@ export default function PaperTradingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold text-gray-900">Paper Trading</h1>
+              <h1 className="text-4xl font-bold text-white">Paper Trading</h1>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-blue-600">
+                <div className="flex items-center gap-1 text-blue-400">
                   <RefreshCw className="w-5 h-5" />
                   <span className="text-sm font-medium">Auto Refresh</span>
                 </div>
               </div>
             </div>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-300">
               Practice trading with virtual money using real-time NSE/BSE market data
             </p>
           </div>
@@ -259,15 +263,15 @@ export default function PaperTradingPage() {
             <Card className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Portfolio Value</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-gray-300">Total Portfolio Value</p>
+                  <p className="text-2xl font-bold text-white">
                     ₹{portfolio.total_value.toLocaleString()}
                   </p>
                 </div>
-                <Wallet className="w-8 h-8 text-blue-600" />
+                <Wallet className="w-8 h-8 text-blue-400" />
               </div>
               <div className="mt-2">
-                <span className={`text-sm ${portfolio.total_pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`text-sm ${portfolio.total_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {portfolio.total_pnl >= 0 ? '+' : ''}₹{portfolio.total_pnl.toLocaleString()}
                   ({portfolio.total_pnl_percent.toFixed(2)}%)
                 </span>
@@ -277,39 +281,39 @@ export default function PaperTradingPage() {
             <Card className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Cash Balance</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-gray-300">Cash Balance</p>
+                  <p className="text-2xl font-bold text-white">
                     ₹{portfolio.cash_balance.toLocaleString()}
                   </p>
                 </div>
-                <DollarSign className="w-8 h-8 text-green-600" />
+                <DollarSign className="w-8 h-8 text-green-400" />
               </div>
             </Card>
 
             <Card className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Invested Value</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-gray-300">Invested Value</p>
+                  <p className="text-2xl font-bold text-white">
                     ₹{portfolio.invested_value.toLocaleString()}
                   </p>
                 </div>
-                <Target className="w-8 h-8 text-purple-600" />
+                <Target className="w-8 h-8 text-purple-400" />
               </div>
             </Card>
 
             <Card className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Trades Today</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-gray-300">Trades Today</p>
+                  <p className="text-2xl font-bold text-white">
                     {portfolio.trades_today}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-400">
                     {portfolio.trades_total} total
                   </p>
                 </div>
-                <Activity className="w-8 h-8 text-orange-600" />
+                <Activity className="w-8 h-8 text-orange-400" />
               </div>
             </Card>
           </div>
@@ -328,10 +332,10 @@ export default function PaperTradingPage() {
               </div>
 
               {showTradeForm && (
-                <form onSubmit={handleTradeSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <form onSubmit={handleTradeSubmit} className="mb-6 p-4 bg-gray-800 rounded-lg">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="symbol">Stock Symbol</Label>
+                      <Label htmlFor="symbol" className="text-white">Stock Symbol</Label>
                       <select
                         id="symbol"
                         value={selectedSymbol}
@@ -341,7 +345,7 @@ export default function PaperTradingPage() {
                             getCurrentPrice(e.target.value)
                           }
                         }}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-600 bg-gray-700 text-white rounded-md"
                         required
                       >
                         <option value="">Select Stock</option>
@@ -354,12 +358,12 @@ export default function PaperTradingPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="action">Action</Label>
+                      <Label htmlFor="action" className="text-white">Action</Label>
                       <select
                         id="action"
                         value={tradeAction}
                         onChange={(e) => setTradeAction(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-600 bg-gray-700 text-white rounded-md"
                       >
                         <option value="buy">Buy</option>
                         <option value="sell">Sell</option>
@@ -367,19 +371,20 @@ export default function PaperTradingPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="quantity">Quantity</Label>
+                      <Label htmlFor="quantity" className="text-white">Quantity</Label>
                       <Input
                         id="quantity"
                         type="number"
                         value={tradeQuantity}
                         onChange={(e) => setTradeQuantity(e.target.value)}
                         placeholder="Number of shares"
+                        className="bg-gray-700 border-gray-600 text-white"
                         required
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="price">Price (₹)</Label>
+                      <Label htmlFor="price" className="text-white">Price (₹)</Label>
                       <Input
                         id="price"
                         type="number"
@@ -387,16 +392,18 @@ export default function PaperTradingPage() {
                         value={tradePrice}
                         onChange={(e) => setTradePrice(e.target.value)}
                         placeholder="Leave empty for market price"
+                        className="bg-gray-700 border-gray-600 text-white"
                       />
                     </div>
 
                     <div className="md:col-span-2">
-                      <Label htmlFor="notes">Notes (Optional)</Label>
+                      <Label htmlFor="notes" className="text-white">Notes (Optional)</Label>
                       <Input
                         id="notes"
                         value={tradeNotes}
                         onChange={(e) => setTradeNotes(e.target.value)}
                         placeholder="Trade notes..."
+                        className="bg-gray-700 border-gray-600 text-white"
                       />
                     </div>
                   </div>
@@ -415,8 +422,8 @@ export default function PaperTradingPage() {
               {positions.length === 0 ? (
                 <div className="text-center py-8">
                   <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Positions</h3>
-                  <p className="text-gray-500">Start trading to build your portfolio</p>
+                  <h3 className="text-lg font-semibold text-gray-300 mb-2">No Positions</h3>
+                  <p className="text-gray-400">Start trading to build your portfolio</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -427,22 +434,22 @@ export default function PaperTradingPage() {
                     const changePercent = marketInfo?.change_percent || 0
 
                     return (
-                      <div key={position.symbol} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div key={position.symbol} className="flex items-center justify-between p-4 border border-gray-600 bg-gray-800 rounded-lg">
                         <div className="flex-1">
                           <div className="flex items-center gap-3">
-                            <h3 className="font-semibold text-lg">{position.symbol}</h3>
-                            <span className="text-sm text-gray-500">{position.quantity} shares</span>
+                            <h3 className="font-semibold text-lg text-white">{position.symbol}</h3>
+                            <span className="text-sm text-gray-400">{position.quantity} shares</span>
                           </div>
                           <div className="flex items-center gap-4 mt-2">
                             <div>
-                              <span className="text-sm text-gray-600">Avg Price: </span>
-                              <span className="font-medium">₹{position.avg_price.toFixed(2)}</span>
+                              <span className="text-sm text-gray-300">Avg Price: </span>
+                              <span className="font-medium text-white">₹{position.avg_price.toFixed(2)}</span>
                             </div>
                             <div>
-                              <span className="text-sm text-gray-600">Current: </span>
-                              <span className="font-medium">₹{currentPrice.toFixed(2)}</span>
+                              <span className="text-sm text-gray-300">Current: </span>
+                              <span className="font-medium text-white">₹{currentPrice.toFixed(2)}</span>
                               {change !== 0 && (
-                                <span className={`ml-2 text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                <span className={`ml-2 text-sm ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                   {change >= 0 ? '+' : ''}{change.toFixed(2)} ({changePercent.toFixed(2)}%)
                                 </span>
                               )}
@@ -450,10 +457,10 @@ export default function PaperTradingPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-semibold">
+                          <div className="text-lg font-semibold text-white">
                             ₹{position.market_value.toLocaleString()}
                           </div>
-                          <div className={`text-sm ${position.unrealized_pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          <div className={`text-sm ${position.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                             {position.unrealized_pnl >= 0 ? '+' : ''}₹{position.unrealized_pnl.toLocaleString()}
                             ({position.unrealized_pnl_percent.toFixed(2)}%)
                           </div>
@@ -474,28 +481,28 @@ export default function PaperTradingPage() {
               {tradeHistory.length === 0 ? (
                 <div className="text-center py-8">
                   <Activity className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-500">No trades yet</p>
+                  <p className="text-gray-400">No trades yet</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {tradeHistory.slice(0, 10).map((trade) => (
-                    <div key={trade.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={trade.id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                       <div className="flex items-center gap-2">
                         {trade.action === 'buy' ? (
-                          <ArrowUpRight className="w-4 h-4 text-green-600" />
+                          <ArrowUpRight className="w-4 h-4 text-green-400" />
                         ) : (
-                          <ArrowDownRight className="w-4 h-4 text-red-600" />
+                          <ArrowDownRight className="w-4 h-4 text-red-400" />
                         )}
                         <div>
-                          <div className="font-medium">{trade.symbol}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="font-medium text-white">{trade.symbol}</div>
+                          <div className="text-sm text-gray-300">
                             {trade.action.toUpperCase()} {trade.quantity} @ ₹{trade.price.toFixed(2)}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium">₹{trade.total_value.toLocaleString()}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-white">₹{trade.total_value.toLocaleString()}</div>
+                        <div className="text-sm text-gray-400">
                           {new Date(trade.created_at).toLocaleDateString()}
                         </div>
                       </div>

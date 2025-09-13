@@ -15,6 +15,7 @@ app/api/v1/endpoints/paper_trades.py
 app/api/v1/endpoints/risk_reports.py
 app/api/v1/endpoints/strategies.py
 app/api/v1/endpoints/user_progress.py
+app/api/v1/endpoints/websocket.py
 app/core/__init__.py
 app/core/config.py
 app/core/database.py
@@ -31,6 +32,9 @@ app/models/user_progress.py
 app/services/__init__.py
 app/services/auth.py
 app/services/backtest.py
+app/services/market_data.py
+app/services/paper_trading.py
+app/services/websocket_service.py
 backend.egg-info/PKG-INFO
 backend.egg-info/SOURCES.txt
 backend.egg-info/dependency_links.txt

@@ -5,11 +5,11 @@ import { BookOpen, PlayCircle, Award, Users, Brain, TrendingUp } from 'lucide-re
 
 export default function EducationPage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Educational Integration</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Educational Integration</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Master responsible trading. Interactive tutorials on technical analysis, risk management, 
             market psychology. Contextual help and guided walkthroughs included.
           </p>
@@ -162,22 +162,22 @@ export default function EducationPage() {
           <Card className="p-6">
             <h2 className="text-2xl font-semibold mb-4">Quick Start Guides</h2>
             <div className="space-y-3">
-              <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="p-3 border rounded-lg hover: cursor-pointer">
                 <h4 className="font-medium">Setting Up Your First Strategy</h4>
                 <p className="text-sm text-gray-600">5 min read</p>
               </div>
               
-              <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="p-3 border rounded-lg hover: cursor-pointer">
                 <h4 className="font-medium">Understanding Backtesting Results</h4>
                 <p className="text-sm text-gray-600">8 min read</p>
               </div>
               
-              <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="p-3 border rounded-lg hover: cursor-pointer">
                 <h4 className="font-medium">Risk Management Best Practices</h4>
                 <p className="text-sm text-gray-600">12 min read</p>
               </div>
               
-              <div className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="p-3 border rounded-lg hover: cursor-pointer">
                 <h4 className="font-medium">Paper Trading Walkthrough</h4>
                 <p className="text-sm text-gray-600">6 min read</p>
               </div>
@@ -185,7 +185,7 @@ export default function EducationPage() {
 
             <h3 className="text-lg font-semibold mt-6 mb-3">Video Tutorials</h3>
             <div className="space-y-2">
-              <div className="flex items-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center p-2 border rounded-lg hover: cursor-pointer">
                 <PlayCircle className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
                   <p className="text-sm font-medium">Platform Overview</p>
@@ -193,7 +193,7 @@ export default function EducationPage() {
                 </div>
               </div>
               
-              <div className="flex items-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center p-2 border rounded-lg hover: cursor-pointer">
                 <PlayCircle className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
                   <p className="text-sm font-medium">Building Your First Strategy</p>
@@ -201,7 +201,7 @@ export default function EducationPage() {
                 </div>
               </div>
               
-              <div className="flex items-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center p-2 border rounded-lg hover: cursor-pointer">
                 <PlayCircle className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
                   <p className="text-sm font-medium">Advanced Risk Controls</p>
@@ -216,7 +216,7 @@ export default function EducationPage() {
           <Card className="p-6">
             <h2 className="text-2xl font-semibold mb-4">Interactive Lessons</h2>
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-l-blue-500">
+              <div className="p-4 rounded-lg border-l-4 border-l-blue-500">
                 <h4 className="font-semibold text-blue-800">Currently Active</h4>
                 <h3 className="text-lg font-semibold mt-1">RSI Indicator Deep Dive</h3>
                 <p className="text-sm text-blue-600 mt-1">
@@ -228,7 +228,7 @@ export default function EducationPage() {
                 </div>
               </div>
               
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <h3 className="font-semibold">Support & Resistance Levels</h3>
                 <p className="text-sm text-gray-600 mt-1">
                   Learn to identify key price levels and trade breakouts
@@ -239,7 +239,7 @@ export default function EducationPage() {
                 </div>
               </div>
               
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="p-4  rounded-lg">
                 <h3 className="font-semibold">Portfolio Diversification</h3>
                 <p className="text-sm text-gray-600 mt-1">
                   Understand correlation and build balanced portfolios
@@ -271,7 +271,7 @@ export default function EducationPage() {
                 </div>
               </div>
               
-              <div className="flex items-center p-3 bg-blue-50 rounded-lg border">
+              <div className="flex items-center p-3 rounded-lg border">
                 <Award className="w-8 h-8 text-blue-600 mr-3" />
                 <div>
                   <h4 className="font-semibold text-blue-800">Strategy Building Expert</h4>

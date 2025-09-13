@@ -16,7 +16,7 @@ const ConditionNode = memo(({ data, selected, id }) => {
     less_than: { name: '<', color: 'bg-red-500' },
     crossover: { name: 'Cross Above', color: 'bg-blue-500' },
     crossunder: { name: 'Cross Below', color: 'bg-purple-500' },
-    equals: { name: '=', color: 'bg-gray-500' },
+    equals: { name: '=', color: '0' },
     and: { name: 'AND', color: 'bg-yellow-500' },
     or: { name: 'OR', color: 'bg-orange-500' }
   };

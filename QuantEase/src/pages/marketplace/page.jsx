@@ -5,11 +5,11 @@ import { Users, Star, TrendingUp, Download, Share2, Eye } from 'lucide-react';
 
 export default function MarketplacePage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Community Marketplace</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Community Marketplace</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Learn collectively. Share strategies, browse performance rankings, collaborate on development. 
             Earn reputation through valuable contributions.
           </p>
@@ -217,7 +217,7 @@ export default function MarketplacePage() {
           <Card className="p-6">
             <h2 className="text-2xl font-semibold mb-4">Community Stats</h2>
             <div className="space-y-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <div className="text-center p-4 rounded-lg">
                 <h3 className="text-2xl font-bold text-blue-600">12,450</h3>
                 <p className="text-sm text-blue-800">Active Members</p>
               </div>
@@ -306,7 +306,7 @@ export default function MarketplacePage() {
           <Card className="p-6">
             <h2 className="text-2xl font-semibold mb-4">Collaboration Hub</h2>
             <div className="space-y-4">
-              <div className="p-3 bg-blue-50 rounded-lg">
+              <div className="p-3 rounded-lg">
                 <h4 className="font-medium text-blue-800">Open Project</h4>
                 <p className="text-sm text-blue-600">Multi-timeframe momentum strategy</p>
                 <p className="text-xs text-blue-500 mt-1">Looking for backtesting experts</p>

@@ -161,7 +161,7 @@ export default function StrategyBuilder({ onStrategyCreate, onBacktestRun, loadi
             <div className="space-y-6">
                 {/* Strategy Selection */}
                 {existingStrategies.length > 0 && (
-                    <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="p-4 rounded-lg">
                         <div className="flex items-center gap-2 mb-3">
                             <input
                                 type="checkbox"
@@ -181,7 +181,7 @@ export default function StrategyBuilder({ onStrategyCreate, onBacktestRun, loadi
                                     id="existingStrategy"
                                     value={selectedExistingStrategy}
                                     onChange={(e) => setSelectedExistingStrategy(e.target.value)}
-                                    className="w-full p-2 border rounded mt-1"
+                                    className="w-full p-2 border rounded mt-1 "
                                 >
                                     <option value="">Choose a strategy...</option>
                                     {existingStrategies.map(strategy => (
@@ -239,7 +239,7 @@ export default function StrategyBuilder({ onStrategyCreate, onBacktestRun, loadi
                                         <select
                                             value={indicator.type}
                                             onChange={(e) => updateIndicator(index, 'type', e.target.value)}
-                                            className="w-full p-2 border rounded"
+                                            className="w-full p-2 border rounded "
                                         >
                                             {AVAILABLE_INDICATORS.map(ind => (
                                                 <option key={ind.type} value={ind.type}>
@@ -292,7 +292,7 @@ export default function StrategyBuilder({ onStrategyCreate, onBacktestRun, loadi
                             id="stock"
                             value={selectedStock}
                             onChange={(e) => setSelectedStock(e.target.value)}
-                            className="w-full p-2 border rounded mt-1"
+                            className="w-full p-2 border rounded mt-1 "
                         >
                             {AVAILABLE_STOCKS.map(stock => (
                                 <option key={stock} value={stock}>{stock}</option>

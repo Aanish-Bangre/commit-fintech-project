@@ -87,7 +87,7 @@ export default function BacktestResults({ backtest, onViewDetails }) {
               <TrendingUp className="w-5 h-5 text-blue-600 mr-1" />
               <span className="text-sm text-gray-600">Sharpe Ratio</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold ">
               {sharpe.toFixed(2)}
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function BacktestResults({ backtest, onViewDetails }) {
               <Target className="w-5 h-5 text-purple-600 mr-1" />
               <span className="text-sm text-gray-600">Win Rate</span>
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold ">
               {winRate.toFixed(1)}%
             </div>
           </div>
@@ -176,17 +176,17 @@ export default function BacktestResults({ backtest, onViewDetails }) {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <div className="text-center p-3  rounded-lg">
               <div className="text-sm text-gray-600">Risk Level</div>
               <div className={`font-semibold ${getRiskLevelColor(riskReport.risk_level)}`}>
                 {riskReport.risk_level.toUpperCase()}
               </div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <div className="text-center p-3  rounded-lg">
               <div className="text-sm text-gray-600">Sharpe Ratio</div>
               <div className="font-semibold">{riskReport.sharpe.toFixed(2)}</div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <div className="text-center p-3  rounded-lg">
               <div className="text-sm text-gray-600">Volatility</div>
               <div className="font-semibold">{(riskReport.volatility * 100).toFixed(2)}%</div>
             </div>

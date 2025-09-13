@@ -5,58 +5,58 @@ import { Shield, AlertTriangle, TrendingDown, Target } from 'lucide-react';
 
 export default function RiskDashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Risk Management Dashboard</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Risk Management Dashboard</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Monitor safety in real-time. Track drawdown (&lt;20%), Sharpe ratio (&gt;1.5), 
             win rate (&gt;60%) with color-coded alerts. Never trade blind with continuous risk monitoring.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6 border-l-4 border-l-green-500">
+          <Card className="p-6 border-l-4 border-l-green-500 bg-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Current Drawdown</p>
-                <p className="text-2xl font-bold text-green-600">-8.2%</p>
-                <p className="text-xs text-gray-500">Target: &lt;20%</p>
+                <p className="text-sm text-gray-300">Current Drawdown</p>
+                <p className="text-2xl font-bold text-green-400">-8.2%</p>
+                <p className="text-xs text-gray-400">Target: &lt;20%</p>
               </div>
-              <TrendingDown className="w-8 h-8 text-green-600" />
+              <TrendingDown className="w-8 h-8 text-green-400" />
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-green-500">
+          <Card className="p-6 border-l-4 border-l-green-500 bg-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Sharpe Ratio</p>
-                <p className="text-2xl font-bold text-green-600">1.8</p>
-                <p className="text-xs text-gray-500">Target: &gt;1.5</p>
+                <p className="text-sm text-gray-300">Sharpe Ratio</p>
+                <p className="text-2xl font-bold text-green-400">1.8</p>
+                <p className="text-xs text-gray-400">Target: &gt;1.5</p>
               </div>
-              <Target className="w-8 h-8 text-green-600" />
+              <Target className="w-8 h-8 text-green-400" />
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-green-500">
+          <Card className="p-6 border-l-4 border-l-green-500 bg-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Win Rate</p>
-                <p className="text-2xl font-bold text-green-600">64%</p>
-                <p className="text-xs text-gray-500">Target: &gt;60%</p>
+                <p className="text-sm text-gray-300">Win Rate</p>
+                <p className="text-2xl font-bold text-green-400">64%</p>
+                <p className="text-xs text-gray-400">Target: &gt;60%</p>
               </div>
-              <Shield className="w-8 h-8 text-green-600" />
+              <Shield className="w-8 h-8 text-green-400" />
             </div>
           </Card>
 
-          <Card className="p-6 border-l-4 border-l-yellow-500">
+          <Card className="p-6 border-l-4 border-l-yellow-500 bg-gray-800">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Risk Score</p>
-                <p className="text-2xl font-bold text-yellow-600">Medium</p>
-                <p className="text-xs text-gray-500">Monitor closely</p>
+                <p className="text-sm text-gray-300">Risk Score</p>
+                <p className="text-2xl font-bold text-yellow-400">Medium</p>
+                <p className="text-xs text-gray-400">Monitor closely</p>
               </div>
-              <AlertTriangle className="w-8 h-8 text-yellow-600" />
+              <AlertTriangle className="w-8 h-8 text-yellow-400" />
             </div>
           </Card>
         </div>
@@ -101,7 +101,7 @@ export default function RiskDashboardPage() {
                   <p className="text-xs text-yellow-600">RELIANCE exceeding 5% allocation</p>
                 </div>
               </div>
-              <div className="flex items-center p-3 bg-blue-50 rounded-lg border-l-4 border-l-blue-500">
+              <div className="flex items-center p-3 rounded-lg border-l-4 border-l-blue-500">
                 <Shield className="w-5 h-5 text-blue-600 mr-3" />
                 <div>
                   <p className="text-sm font-medium text-blue-800">Stop Loss Triggered</p>

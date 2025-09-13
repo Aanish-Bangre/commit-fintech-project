@@ -70,11 +70,11 @@ export default function BacktestingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Backtesting Engine</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Backtesting Engine</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Test with 15+ years of data. Institutional-grade validation using NSE historical data
             across all market conditions. Get comprehensive performance reports before risking real capital.
           </p>
@@ -87,7 +87,7 @@ export default function BacktestingPage() {
               <Calendar className="w-8 h-8 text-blue-600 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold">Historical Data</h3>
-                <p className="text-sm text-gray-500">15+ Years</p>
+                <p className="text-sm text-gray-400">15+ Years</p>
               </div>
             </div>
           </Card>
@@ -97,7 +97,7 @@ export default function BacktestingPage() {
               <BarChart className="w-8 h-8 text-green-600 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold">Market Coverage</h3>
-                <p className="text-sm text-gray-500">10 NSE Stocks</p>
+                <p className="text-sm text-gray-400">10 NSE Stocks</p>
               </div>
             </div>
           </Card>
@@ -107,7 +107,7 @@ export default function BacktestingPage() {
               <TrendingUp className="w-8 h-8 text-purple-600 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold">Accuracy</h3>
-                <p className="text-sm text-gray-500">Institutional Grade</p>
+                <p className="text-sm text-gray-400">Institutional Grade</p>
               </div>
             </div>
           </Card>
@@ -117,7 +117,7 @@ export default function BacktestingPage() {
               <FileText className="w-8 h-8 text-orange-600 mr-3" />
               <div>
                 <h3 className="text-lg font-semibold">Reports</h3>
-                <p className="text-sm text-gray-500">Comprehensive</p>
+                <p className="text-sm text-gray-400">Comprehensive</p>
               </div>
             </div>
           </Card>
@@ -181,7 +181,7 @@ export default function BacktestingPage() {
             <Card className="p-6">
               <h2 className="text-2xl font-semibold mb-4">Backtest History</h2>
               {backtestHistory.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-400">
                   <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>No backtests found. Create and run your first backtest to see results here.</p>
                 </div>
@@ -199,27 +199,27 @@ export default function BacktestingPage() {
                           <div className="flex-1">
                             <div className="flex items-center gap-4 mb-2">
                               <h3 className="font-semibold">{backtest.dataset}</h3>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-400">
                                 {new Date(backtest.start_date).toLocaleDateString()} - {new Date(backtest.end_date).toLocaleDateString()}
                               </span>
                             </div>
                             <div className="grid grid-cols-4 gap-4 text-sm">
                               <div>
-                                <span className="text-gray-600">Return:</span>
+                                <span className="text-gray-300">Return:</span>
                                 <span className={`ml-1 font-medium ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                   {totalReturn >= 0 ? '+' : ''}{totalReturn.toFixed(2)}%
                                 </span>
                               </div>
                               <div>
-                                <span className="text-gray-600">Sharpe:</span>
+                                <span className="text-gray-300">Sharpe:</span>
                                 <span className="ml-1 font-medium">{sharpe.toFixed(2)}</span>
                               </div>
                               <div>
-                                <span className="text-gray-600">Drawdown:</span>
+                                <span className="text-gray-300">Drawdown:</span>
                                 <span className="ml-1 font-medium text-red-600">{maxDrawdown.toFixed(2)}%</span>
                               </div>
                               <div>
-                                <span className="text-gray-600">Trades:</span>
+                                <span className="text-gray-300">Trades:</span>
                                 <span className="ml-1 font-medium">{metrics.trades || 0}</span>
                               </div>
                             </div>

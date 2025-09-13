@@ -5,11 +5,11 @@ import { Bot, Brain, Lightbulb, Settings } from 'lucide-react';
 
 export default function AIAssistantPage() {
   return (
-    <div className="min-h-screen px-6 py-6">
+    <div className="min-h-screen  text-white px-6 py-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold -900 mb-4">AI Assistant</h1>
-          <p className="text-xl -600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">AI Assistant</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Prevent costly mistakes. Detects overfitting, optimizes parameters, identifies market changes. 
             ML-powered recommendations for better strategy performance.
           </p>
@@ -21,7 +21,7 @@ export default function AIAssistantPage() {
               <Brain className="w-8 h-8 text-purple-600 mr-3" />
               <h3 className="text-xl font-semibold">Overfitting Detection</h3>
             </div>
-            <p className="-600 mb-4">
+            <p className="text-gray-300 mb-4">
               Advanced ML algorithms detect when your strategy is too tailored to historical data.
             </p>
             <div className="bg-green-50 p-3 rounded-lg">
@@ -34,7 +34,7 @@ export default function AIAssistantPage() {
               <Settings className="w-8 h-8 text-blue-600 mr-3" />
               <h3 className="text-xl font-semibold">Parameter Optimization</h3>
             </div>
-            <p className="-600 mb-4">
+            <p className="text-gray-300 mb-4">
               Automatically fine-tune strategy parameters for optimal performance.
             </p>
             <Button className="w-full">Optimize Now</Button>
@@ -45,7 +45,7 @@ export default function AIAssistantPage() {
               <Lightbulb className="w-8 h-8 text-yellow-600 mr-3" />
               <h3 className="text-xl font-semibold">Market Insights</h3>
             </div>
-            <p className="-600 mb-4">
+            <p className="text-gray-300 mb-4">
               Real-time analysis of market conditions and regime changes.
             </p>
             <div className="bg-yellow-50 p-3 rounded-lg">
@@ -60,16 +60,16 @@ export default function AIAssistantPage() {
               <Bot className="w-8 h-8 text-blue-600 mr-3" />
               AI Chat Assistant
             </h2>
-            <div className="rounded-lg h-64 p-4 mb-4 overflow-y-auto">
+            <div className="bg-gray-800 rounded-lg h-64 p-4 mb-4 overflow-y-auto">
               <div className="space-y-3">
                 <div className="bg-blue-600 p-3 rounded-lg max-w-xs">
-                  <p className="text-sm">Hello! I'm your AI trading assistant. How can I help you today?</p>
+                  <p className="text-sm text-white">Hello! I'm your AI trading assistant. How can I help you today?</p>
                 </div>
-                <div className="bg-[#272727] p-3 rounded-lg max-w-xs ml-auto">
-                  <p className="text-sm">Can you analyze my RSI strategy performance?</p>
+                <div className="bg-gray-700 p-3 rounded-lg max-w-xs ml-auto">
+                  <p className="text-sm text-white">Can you analyze my RSI strategy performance?</p>
                 </div>
                 <div className="bg-blue-600 p-3 rounded-lg max-w-xs">
-                  <p className="text-sm">I've analyzed your RSI strategy. The parameters look good, but I recommend adjusting the overbought threshold from 70 to 75 based on current market conditions.</p>
+                  <p className="text-sm text-white">I've analyzed your RSI strategy. The parameters look good, but I recommend adjusting the overbought threshold from 70 to 75 based on current market conditions.</p>
                 </div>
               </div>
             </div>
@@ -77,7 +77,7 @@ export default function AIAssistantPage() {
               <input 
                 type="text" 
                 placeholder="Ask about your strategies..."
-                className="flex-1 p-2 border rounded-lg"
+                className="flex-1 p-2 border border-gray-600 bg-gray-700 text-white rounded-lg"
               />
               <Button>Send</Button>
             </div>
@@ -122,32 +122,32 @@ export default function AIAssistantPage() {
               <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-white text-2xl font-bold">95%</span>
               </div>
-              <h3 className="font-semibold mb-1">Strategy Health Score</h3>
-              <p className="text-sm -600">Overall strategy performance rating</p>
+              <h3 className="font-semibold mb-1 text-white">Strategy Health Score</h3>
+              <p className="text-sm text-gray-300">Overall strategy performance rating</p>
             </div>
             
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-white text-2xl font-bold">3.2</span>
               </div>
-              <h3 className="font-semibold mb-1">AI Confidence</h3>
-              <p className="text-sm -600">Model prediction confidence level</p>
+              <h3 className="font-semibold mb-1 text-white">AI Confidence</h3>
+              <p className="text-sm text-gray-300">Model prediction confidence level</p>
             </div>
             
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-white text-2xl font-bold">12</span>
               </div>
-              <h3 className="font-semibold mb-1">Active Insights</h3>
-              <p className="text-sm -600">Current AI-generated recommendations</p>
+              <h3 className="font-semibold mb-1 text-white">Active Insights</h3>
+              <p className="text-sm text-gray-300">Current AI-generated recommendations</p>
             </div>
             
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-white text-2xl font-bold">24/7</span>
               </div>
-              <h3 className="font-semibold mb-1">Monitoring</h3>
-              <p className="text-sm -600">Continuous market analysis</p>
+              <h3 className="font-semibold mb-1 text-white">Monitoring</h3>
+              <p className="text-sm text-gray-300">Continuous market analysis</p>
             </div>
           </div>
         </Card>
