@@ -37,24 +37,9 @@ async def get_current_user(authorization: str = Header(...)):
 
 async def ensure_user_profile(user_id: str, email: str, name: str = None):
     """
-    Creates/updates a profile row in `users` table extension.
-    This uses Supabase Postgres insert with upsert via ON CONFLICT on id.
+    Placeholder for user profile creation.
+    Since we don't have a users table yet, we'll skip this for now.
     """
-    from datetime import datetime
-    from app.core.database import supabase
-    
-    payload = {
-        "id": user_id,
-        "email": email,
-        "name": name or "",
-        "role": "retail",
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat(),
-    }
-    
-    # upsert
-    res = supabase.table("users").upsert(payload).execute()
-    if res.error:
-        # log but do not break
-        print("Supabase upsert user error:", res.error)
-    return res.data
+    # Skip user profile creation since the users table doesn't exist
+    # The authentication is working fine without this
+    return {"id": user_id, "email": email}

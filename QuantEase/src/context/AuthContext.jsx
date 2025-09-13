@@ -20,3 +20,6 @@ export function useAuthContext() {
   }
   return context
 }
+
+// Export useAuth for convenience
+export { useAuth } from '@/hooks/useAuth'

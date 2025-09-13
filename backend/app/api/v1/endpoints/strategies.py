@@ -18,7 +18,7 @@ router = APIRouter()
 async def create_strategy(payload: StrategyCreate, user=Depends(get_current_user)):
     """Create a new trading strategy"""
     # Ensure user profile exists
-    await run_in_threadpool(ensure_user_profile, user["id"], user["email"])
+    await ensure_user_profile(user["id"], user["email"])
 
     strategy_id = uuid.uuid4()
     now = datetime.utcnow().isoformat()
@@ -37,12 +37,12 @@ async def create_strategy(payload: StrategyCreate, user=Depends(get_current_user
     }
 
     # Insert into Supabase
-    res = await run_in_threadpool(supabase.table("strategies").insert, row)
+    res = await run_in_threadpool(lambda: supabase.table("strategies").insert(row).execute())
     
-    if res.error:
+    if res.data is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create strategy: {res.error}"
+            detail="Failed to create strategy"
         )
 
     return StrategyOut(
@@ -203,3 +203,9 @@ async def generate_code(payload: dict, user=Depends(get_current_user)):
     cfg = payload.get("config_json") or payload
     code = await run_in_threadpool(generate_python_from_config, cfg)
     return {"python_code": code}
+
+
+@router.post("/save_strategy", response_model=StrategyOut)
+async def save_strategy(payload: StrategyCreate, user=Depends(get_current_user)):
+    """Save a new trading strategy (alias for create_strategy)"""
+    return await create_strategy(payload, user)
